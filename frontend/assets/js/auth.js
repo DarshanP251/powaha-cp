@@ -66,9 +66,9 @@ async function login() {
        ROLE-BASED REDIRECT
     ========================= */
     if (data.role === 'ADMIN') {
-      window.location.href = '/frontend/admin/dashboard.html';
+      window.location.href = '/admin/dashboard.html';
     } else if (data.role === 'CP') {
-      window.location.href = '/frontend/cp/dashboard.html';
+      window.location.href = '/cp/dashboard.html';
     } else {
       localStorage.removeItem('token');
       error.innerText = 'Invalid role';
