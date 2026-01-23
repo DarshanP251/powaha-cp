@@ -20,3 +20,30 @@ app.use(
     credentials: true
   })
 );
+
+import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
+
+const prisma = new PrismaClient();
+
+async function ensureAdmin() {
+  const adminEmail = "admin@powaha.com";
+
+  const existing = await prisma.user.findUnique({
+    where: { email: adminEmail },
+  });
+
+  if (!existing) {
+    const hashed = await bcrypt.hash("admin123", 10);
+    await prisma.user.create({
+      data: {
+        email: adminEmail,
+        password: hashed,
+        role: "ADMIN",
+      },
+    });
+    console.log("✅ Admin user created");
+  }
+}
+
+ensureAdmin();
