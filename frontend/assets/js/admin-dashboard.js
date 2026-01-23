@@ -61,38 +61,48 @@ async function loadDashboardStats() {
 async function loadApplications() {
   try {
     const res = await fetch(`${API_BASE}/admin/cp-applications`, {
-      headers: authHeaders()
+      headers: authHeaders(),
     });
 
-    if (!res.ok) return;
-
-    const data = await res.json();
-    const tbody = document.getElementById('applicationsTable');
-    tbody.innerHTML = '';
-
-    if (!data.length) {
-      tbody.innerHTML = '<tr><td colspan="5" class="empty-message">No pending applications</td></tr>';
+    if (!res.ok) {
+      console.error("Failed to fetch CP applications");
       return;
     }
 
-    data.filter(app => app.status === 'SUBMITTED').forEach(app => {
+    const data = await res.json();
+    const tbody = document.getElementById("applicationsTable");
+    tbody.innerHTML = "";
+
+    const pending = data.filter(app => app.status === "SUBMITTED");
+
+    if (!pending.length) {
+      tbody.innerHTML =
+        '<tr><td colspan="5" class="empty-message">No pending applications</td></tr>';
+      return;
+    }
+
+    pending.forEach(app => {
+      const cp = app.cp || {};
+
       tbody.innerHTML += `
         <tr>
-          <td><strong>${app.cp_id || '-'}</strong></td>
-          <td>${app.cp_id || '-'}</td>
-          <td>Not available</td>
-          <td>${new Date(app.application_id).toLocaleDateString()}</td>
+          <td><strong>${cp.name || "-"}</strong></td>
+          <td>${cp.email || "-"}</td>
+          <td>${cp.mobile || "-"}</td>
+          <td>${new Date(app.created_at).toLocaleDateString()}</td>
           <td>
-            <button class="btn-small" onclick="openApplicationModal('${app.cp_id}')">Review</button>
+            <button class="btn-small" onclick="openApplicationModal('${app.application_id}')">
+              Review
+            </button>
           </td>
         </tr>
       `;
     });
-
   } catch (err) {
-    console.error('Load applications error:', err);
+    console.error("Load applications error:", err);
   }
 }
+
 
 /* =========================
    LOAD INCENTIVES FOR APPROVAL
