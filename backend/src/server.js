@@ -9,3 +9,14 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   console.log("DB URL:", process.env.DATABASE_URL);
 });
+
+import cors from "cors";
+
+app.use(
+  cors({
+    origin: [
+      "https://powaha-cp-1.onrender.com",
+    ],
+    credentials: true
+  })
+);
