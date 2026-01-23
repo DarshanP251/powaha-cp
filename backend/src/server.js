@@ -1,3 +1,10 @@
+import { runMigrations } from "./prismaMigrate.js";
+
+if (process.env.NODE_ENV === "production") {
+  runMigrations();
+}
+
+
 require('dotenv').config();
 
 const app = require('./app');
