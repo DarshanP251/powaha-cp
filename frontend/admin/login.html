@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>POWAHA Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="../assets/css/auth.css" />
+</head>
+
+<body>
+
+  <div class="auth-wrapper">
+    <div class="auth-card">
+
+      <h1>Welcome to POWAHA</h1>
+      <p class="subtitle">Login to continue</p>
+
+      <!-- Role Toggle -->
+      <div class="role-toggle">
+        <button class="role-btn active" data-role="ADMIN">Admin</button>
+        <button class="role-btn" data-role="CP">Community Partner</button>
+      </div>
+
+      <!-- Form -->
+      <div class="form-group">
+        <label>Email</label>
+        <input id="email" type="email" placeholder="you@powaha.com" />
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <input id="password" type="password" placeholder="••••••••" />
+      </div>
+
+      <button class="primary-btn" onclick="login()">Login</button>
+
+      <p id="error" class="error"></p>
+
+      <div class="footer">
+        <span>New Partner?</span>
+        <a href="../cp/apply.html">Apply as Community Partner</a>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/auth.js"></script>
+
+</body>
+
+</html>

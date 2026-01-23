@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>My Leads</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+<body>
+
+<div class="leads-container">
+  <!-- Header -->
+  <div class="leads-header">
+    <h1>My Leads</h1>
+    <p>You can create leads only within your assigned Area of Operation.</p>
+  </div>
+
+  <!-- Add Lead Form -->
+  <div class="card">
+    <h3>Add New Lead</h3>
+    
+    <form class="leads-form" onsubmit="event.preventDefault(); addLead();">
+      <div class="form-row">
+        <input 
+          id="church" 
+          type="text"
+          placeholder="Church Name" 
+          required
+        />
+        <select id="location" required>
+          <option value="">Select Location (AOO)</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <input 
+          id="contact" 
+          type="text"
+          placeholder="Contact Person"
+        />
+        <input 
+          id="mobile" 
+          type="tel"
+          placeholder="Contact Mobile" 
+          required
+        />
+      </div>
+
+      <button type="submit" class="btn-primary">Add Lead</button>
+    </form>
+  </div>
+
+  <!-- Leads Table -->
+  <div class="card">
+    <h3>Your Leads</h3>
+
+    <div class="leads-table-wrapper">
+      <table class="leads-table">
+        <thead>
+          <tr>
+            <th>Church</th>
+            <th>Location</th>
+            <th>Stage</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="leads">
+          <tr>
+            <td colspan="4" class="empty-message">No leads yet. Add your first lead above.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <button class="btn-secondary" onclick="go('dashboard.html')">← Back to Dashboard</button>
+  </div>
+</div>
+
+<script src="../assets/js/api.js"></script>
+<script src="../assets/js/cp.js"></script>
+
+</body>
+</html>

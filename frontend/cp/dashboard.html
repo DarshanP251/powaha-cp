@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>CP Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+<body>
+
+<div class="dashboard-wrapper">
+  <!-- Header -->
+  <div class="dashboard-header">
+    <div class="header-content">
+      <div>
+        <h1 id="cpName">Loading...</h1>
+        <p id="cpStatus" class="status-badge">Status: <span id="cpStatusValue">-</span></p>
+      </div>
+      <button class="btn-danger" onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="dashboard-container">
+    <!-- Sidebar Navigation -->
+    <div class="dashboard-sidebar">
+      <nav class="sidebar-nav">
+        <button class="nav-btn active" onclick="switchTab('overview')">📊 Overview</button>
+        <button class="nav-btn" onclick="switchTab('leads')">📋 Leads</button>
+        <button class="nav-btn" onclick="switchTab('incentives')">💰 Incentives</button>
+        <button class="nav-btn" onclick="switchTab('profile')">👤 Profile</button>
+        <button class="nav-btn" onclick="switchTab('documents')">📄 Documents</button>
+      </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="dashboard-main">
+
+      <!-- OVERVIEW TAB -->
+      <div id="overview-tab" class="dashboard-tab active">
+        
+        <!-- Quick Stats -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon">📍</div>
+            <div class="stat-content">
+              <p class="stat-label">Assigned Area of Operation</p>
+              <p id="cpAoo" class="stat-value stat-aoo">Not assigned</p>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon">📋</div>
+            <div class="stat-content">
+              <p class="stat-label">Total Leads</p>
+              <p id="leadTotal" class="stat-value">0</p>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon">✅</div>
+            <div class="stat-content">
+              <p class="stat-label">Closed Leads</p>
+              <p id="leadClosed" class="stat-value">0</p>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon">💰</div>
+            <div class="stat-content">
+              <p class="stat-label">Total Incentives</p>
+              <p id="incTotal" class="stat-value">0</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Leads by Stage -->
+        <div class="section-card">
+          <h3>Lead Pipeline</h3>
+          <div class="leads-pipeline">
+            <ul id="leadStages" class="pipeline-list"></ul>
+          </div>
+        </div>
+
+        <!-- Incentive Summary -->
+        <div class="section-card">
+          <h3>Incentive Summary</h3>
+          <div class="incentive-summary">
+            <div class="incentive-box">
+              <p class="incentive-label">Pending</p>
+              <p id="incPending" class="incentive-amount">0</p>
+            </div>
+            <div class="incentive-box approved">
+              <p class="incentive-label">Approved</p>
+              <p id="incApproved" class="incentive-amount">0</p>
+            </div>
+            <div class="incentive-box">
+              <p class="incentive-label">Paid</p>
+              <p id="incPaid" class="incentive-amount">0</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="section-card">
+          <h3>Quick Actions</h3>
+          <div class="action-buttons">
+            <button class="action-btn primary" onclick="go('leads.html')">
+              <span>➕ Add New Lead</span>
+              <span class="btn-desc">Create a new church/lead</span>
+            </button>
+            <button class="action-btn secondary" onclick="go('incentives.html')">
+              <span>💸 View Incentives</span>
+              <span class="btn-desc">Track your earnings</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- LEADS TAB -->
+      <div id="leads-tab" class="dashboard-tab">
+        <div class="section-card">
+          <h3>My Leads</h3>
+          <div class="leads-table-wrapper">
+            <table class="leads-table">
+              <thead>
+                <tr>
+                  <th>Church Name</th>
+                  <th>Location</th>
+                  <th>Stage</th>
+                  <th>Contact</th>
+                </tr>
+              </thead>
+              <tbody id="leadsTableBody">
+                <tr>
+                  <td colspan="4" class="empty-message">No leads yet. <a href="#" onclick="switchTab('overview'); return false;">Create one</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <button class="btn-primary" onclick="go('leads.html')" style="margin-top: 1rem;">View All Leads</button>
+        </div>
+      </div>
+
+      <!-- INCENTIVES TAB -->
+      <div id="incentives-tab" class="dashboard-tab">
+        <div class="section-card">
+          <h3>Recent Incentives</h3>
+          <div class="incentives-list" id="recentIncentives">
+            <p class="empty-message">No incentives yet</p>
+          </div>
+          <button class="btn-primary" onclick="go('incentives.html')" style="margin-top: 1rem;">View All Incentives</button>
+        </div>
+      </div>
+
+      <!-- PROFILE TAB -->
+      <div id="profile-tab" class="dashboard-tab">
+        <div class="section-card">
+          <h3>Organization Profile</h3>
+          <div class="profile-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Organization Name</label>
+                <input id="profileName" type="text" disabled />
+              </div>
+              <div class="form-group">
+                <label>Email</label>
+                <input id="profileEmail" type="email" disabled />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Mobile</label>
+                <input id="profileMobile" type="tel" disabled />
+              </div>
+              <div class="form-group">
+                <label>Status</label>
+                <input id="profileStatus" type="text" disabled />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-card">
+          <h3>Bank Details (For Payouts)</h3>
+          <div class="profile-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Account Holder Name</label>
+                <input id="bankName" type="text" placeholder="Your account name" />
+              </div>
+              <div class="form-group">
+                <label>Bank Account Number</label>
+                <input id="bankAccount" type="text" placeholder="Account number" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>IFSC Code</label>
+                <input id="bankIfsc" type="text" placeholder="IFSC code" />
+              </div>
+              <div class="form-group">
+                <label>Bank Name</label>
+                <input id="bankNameLabel" type="text" placeholder="Bank name" />
+              </div>
+            </div>
+            <button class="btn-primary" onclick="saveBankDetails()">Save Bank Details</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- DOCUMENTS TAB -->
+      <div id="documents-tab" class="dashboard-tab">
+        <div class="section-card">
+          <h3>Document Verification</h3>
+          <div class="documents-list">
+            <div class="doc-item">
+              <div class="doc-info">
+                <p class="doc-name">📄 Identity Proof (Aadhar/PAN)</p>
+                <p class="doc-desc">Required for verification</p>
+              </div>
+              <div class="doc-status pending">Pending Upload</div>
+            </div>
+            <div class="doc-item">
+              <div class="doc-info">
+                <p class="doc-name">📋 Organization Registration</p>
+                <p class="doc-desc">NGO/Trust registration certificate</p>
+              </div>
+              <div class="doc-status pending">Pending Upload</div>
+            </div>
+            <div class="doc-item">
+              <div class="doc-info">
+                <p class="doc-name">🏦 Bank Details Proof</p>
+                <p class="doc-desc">Cancelled cheque or bank statement</p>
+              </div>
+              <div class="doc-status pending">Pending Upload</div>
+            </div>
+          </div>
+          <p class="info-text" style="margin-top: 1rem;">⚠️ Document uploads coming soon. Currently submit documents to: <strong>documents@powaha.com</strong></p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="../assets/js/api.js"></script>
+<script src="../assets/js/cp.js"></script>
+<script src="../assets/js/cp-dashboard.js"></script>
+
+</body>
+</html>

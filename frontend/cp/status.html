@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>CP Application Status</title>
+  <link rel="stylesheet" href="../assets/css/auth.css" />
+</head>
+
+<body>
+
+  <div class="auth-wrapper">
+    <div class="auth-card status-card">
+
+      <h2>Community Partner Application</h2>
+      <p class="subtitle">
+        Track the status of your application
+      </p>
+
+      <div id="statusBox" class="status-box">
+        <div class="status-indicator pending"></div>
+
+        <div class="status-content">
+          <h3 id="statusTitle">Loading...</h3>
+          <p id="statusMessage">
+            Please wait while we fetch your application status.
+          </p>
+        </div>
+      </div>
+
+      <div class="status-info">
+        <h4>What happens next?</h4>
+        <ul>
+          <li>Your application is reviewed by the POWAHA team</li>
+          <li>You may be contacted for further discussion</li>
+          <li>Once approved, you can log in and start managing leads</li>
+        </ul>
+      </div>
+
+      <div class="actions">
+        <a href="../cp/index.html" class="secondary-link">
+          Go to Login
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="../assets/js/api.js"></script>
+
+  <script>
+    async function loadCpStatusPublic() {
+      try {
+        const email = localStorage.getItem('lastAppliedEmail');
+
+        if (!email) {
+          document.getElementById('statusTitle').innerText = 'Application Submitted';
+          document.getElementById('statusMessage').innerText =
+            'Your application has been submitted successfully. Our team will review it shortly.';
+          return;
+        }
+
+        const res = await fetch(`${API_BASE}/cp/application-status?email=${encodeURIComponent(email)}`);
+
+        if (!res.ok) {
+          throw new Error('Failed to fetch status');
+        }
+
+        const data = await res.json();
+
+        const title = document.getElementById('statusTitle');
+        const message = document.getElementById('statusMessage');
+        const indicator = document.querySelector('.status-indicator');
+
+        if (data.status === 'SUBMITTED') {
+          title.innerText = 'Application Under Review';
+          message.innerText =
+            'Your application has been received and is currently under review.';
+          indicator.className = 'status-indicator pending';
+        }
+
+        if (data.status === 'APPROVED') {
+          title.innerText = 'Application Approved 🎉';
+          message.innerText =
+            'Your application has been approved. You can now log in as a Community Partner.';
+          indicator.className = 'status-indicator approved';
+        }
+
+        if (data.status === 'REJECTED') {
+          title.innerText = 'Application Not Approved';
+          message.innerText =
+            'Thank you for your interest. Unfortunately, your application was not approved at this time.';
+          indicator.className = 'status-indicator rejected';
+        }
+
+      } catch (err) {
+        document.getElementById('statusTitle').innerText = 'Application Submitted';
+        document.getElementById('statusMessage').innerText =
+          'Your application has been submitted successfully. Please wait for further updates.';
+      }
+    }
+
+    loadCpStatusPublic();
+  </script>
+
+</body>
+</html>

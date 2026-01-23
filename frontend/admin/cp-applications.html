@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>CP Applications</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="../assets/css/admin.css" />
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>CP Applications</h1>
+    <p>Review and approve Community Partner applications</p>
+  </div>
+
+  <div class="card">
+    <div id="applicationsContainer"></div>
+  </div>
+</div>
+
+<!-- AOO Selection Modal -->
+<div class="modal-overlay" id="aooModal">
+  <div class="modal">
+    <h2>Select Area of Operation (AOO)</h2>
+    <p>Choose one or more districts for this CP</p>
+
+    <div class="modal-search">
+      <input
+        type="text"
+        id="districtSearch"
+        placeholder="Search districts..."
+        oninput="filterDistricts()"
+      />
+    </div>
+
+    <div class="selected-count">
+      <span id="selectedCount">0 districts selected</span>
+    </div>
+
+    <div class="district-list" id="districtList"></div>
+
+    <div class="modal-actions">
+      <button class="cancel-btn" onclick="closeAooModal()">Cancel</button>
+      <button class="confirm-btn" onclick="confirmAooSelection()">Approve with AOO</button>
+    </div>
+  </div>
+</div>
+
+<!-- Success Modal -->
+<div class="modal-overlay" id="successModal">
+  <div class="modal confirmation-modal success">
+    <div class="icon">✓</div>
+    <h2>Approved!</h2>
+    <p id="successMessage">CP has been approved successfully</p>
+    <div class="modal-actions">
+      <button class="confirm-btn" onclick="closeSuccessModal()">Continue</button>
+    </div>
+  </div>
+</div>
+
+<!-- Error Modal -->
+<div class="modal-overlay" id="errorModal">
+  <div class="modal confirmation-modal error">
+    <div class="icon">✕</div>
+    <h2>Rejected</h2>
+    <p id="errorMessage">CP application has been rejected</p>
+    <div class="modal-actions">
+      <button class="confirm-btn" onclick="closeErrorModal()">Continue</button>
+    </div>
+  </div>
+</div>
+
+<!-- Rejection Confirmation Modal -->
+<div class="modal-overlay" id="rejectConfirmModal">
+  <div class="modal rejection-modal">
+    <div class="icon">⚠</div>
+    <h2>Reject Application?</h2>
+    <p>Are you sure you want to reject this CP application? This action cannot be undone.</p>
+    <div class="modal-actions">
+      <button class="cancel-btn" onclick="closeRejectConfirmModal()">Cancel</button>
+      <button class="confirm-btn" onclick="confirmRejection()">Yes, Reject</button>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/js/api.js"></script>
+<script src="../assets/js/admin.js"></script>
+<script>
+  let ALL_DISTRICTS = [];
+  let SELECTED_AOO = new Set();
+  let PENDING_CP_ID = null;
+  let PENDING_REJECT_CP_ID = null;
+
+  // Load districts on page load
+  async function loadDistricts() {
+    try {
+      const res = await fetch('../assets/data/districts.json');
+      const data = await res.json();
+
+      data.forEach(item => {
+        if (item.State && item.District) {
+          ALL_DISTRICTS.push({
+            value: item.District,
+            label: `${item.District}, ${item.State}`
+          });
+        }
+      });
+    } catch (err) {
+      console.error('Failed to load districts', err);
+    }
+  }
+
+  function renderDistrictList(list) {
+    const container = document.getElementById('districtList');
+    container.innerHTML = '';
+
+    if (!list.length) {
+      container.innerHTML = '<p style="text-align: center; color: #94a3b8;">No matching districts</p>';
+      return;
+    }
+
+    list.forEach(district => {
+      const item = document.createElement('div');
+      item.className = 'district-item';
+      item.innerHTML = `
+        <input
+          type="checkbox"
+          id="district-${district.value}"
+          value="${district.value}"
+          ${SELECTED_AOO.has(district.value) ? 'checked' : ''}
+          onchange="updateSelectedCount()"
+        />
+        <label for="district-${district.value}">${district.label}</label>
+      `;
+      container.appendChild(item);
+    });
+  }
+
+  function filterDistricts() {
+    const query = document.getElementById('districtSearch').value.toLowerCase();
+    const filtered = ALL_DISTRICTS.filter(d =>
+      d.label.toLowerCase().includes(query)
+    );
+    renderDistrictList(filtered);
+  }
+
+  function updateSelectedCount() {
+    SELECTED_AOO.clear();
+
+    document.querySelectorAll('.district-list input:checked').forEach(cb => {
+      SELECTED_AOO.add(cb.value);
+    });
+
+    const count = SELECTED_AOO.size;
+    document.getElementById('selectedCount').textContent =
+      count === 0
+        ? '0 districts selected'
+        : `${count} district${count > 1 ? 's' : ''} selected`;
+  }
+
+  function openAooModal(cpId) {
+    PENDING_CP_ID = cpId;
+    SELECTED_AOO.clear();
+    renderDistrictList(ALL_DISTRICTS);
+    document.getElementById('aooModal').classList.add('active');
+  }
+
+  function closeAooModal() {
+    document.getElementById('aooModal').classList.remove('active');
+    PENDING_CP_ID = null;
+    SELECTED_AOO.clear();
+  }
+
+  async function confirmAooSelection() {
+    if (SELECTED_AOO.size === 0) {
+      alert('Please select at least one district');
+      return;
+    }
+
+    const aoo = Array.from(SELECTED_AOO);
+
+    const res = await fetch(`${API_BASE}/admin/cp/${PENDING_CP_ID}/approve`, {
+      method: 'POST',
+      headers: authHeaders(),
+      body: JSON.stringify({ aoo })
+    });
+
+    if (res.ok) {
+      closeAooModal();
+      showSuccessModal('CP has been approved successfully with AOO assigned');
+      loadCpApplicationsNew();
+    } else {
+      showErrorModal('Failed to approve CP');
+    }
+  }
+
+  async function loadCpApplicationsNew() {
+    try {
+      const res = await fetch(`${API_BASE}/admin/cp-applications`, {
+        headers: authHeaders()
+      });
+
+      const data = await res.json();
+      const container = document.getElementById('applicationsContainer');
+      container.innerHTML = '';
+
+      if (!data.length) {
+        container.innerHTML = '<div class="empty-state"><p>No applications yet</p></div>';
+        return;
+      }
+
+      data.forEach(app => {
+        const cp = app.application_data || {};
+        const status = app.status;
+        const statusClass = status.toLowerCase();
+
+        const row = document.createElement('div');
+        row.className = 'app-row';
+        row.innerHTML = `
+          <div class="app-info">
+            <div class="app-name">${cp.name || '-'}</div>
+            <div class="app-details">
+              <div class="detail-item">
+                <div class="detail-label">Email</div>
+                <div>${cp.email || '-'}</div>
+              </div>
+              <div class="detail-item">
+                <div class="detail-label">Mobile</div>
+                <div>${cp.mobile || '-'}</div>
+              </div>
+              <div class="detail-item">
+                <div class="detail-label">Status</div>
+                <div><span class="status-badge ${statusClass}">${status}</span></div>
+              </div>
+            </div>
+            ${
+              status === 'SUBMITTED'
+                ? `
+                  <div class="app-actions">
+                    <button class="approve-btn" onclick="openAooModal('${app.cp_id}')">✓ Approve</button>
+                    <button class="reject-btn" onclick="rejectCpApp('${app.cp_id}')">✕ Reject</button>
+                  </div>
+                `
+                : ''
+            }
+          </div>
+        `;
+        container.appendChild(row);
+      });
+    } catch (err) {
+      console.error('Load CP applications failed', err);
+    }
+  }
+
+  async function rejectCpApp(cpId) {
+    PENDING_REJECT_CP_ID = cpId;
+    document.getElementById('rejectConfirmModal').classList.add('active');
+  }
+
+  async function confirmRejection() {
+    const res = await fetch(`${API_BASE}/admin/cp/${PENDING_REJECT_CP_ID}/reject`, {
+      method: 'POST',
+      headers: authHeaders()
+    });
+
+    if (res.ok) {
+      closeRejectConfirmModal();
+      showErrorModal('CP application has been rejected');
+      loadCpApplicationsNew();
+    } else {
+      closeRejectConfirmModal();
+      showErrorModal('Failed to reject application');
+    }
+  }
+
+  // Close modal on overlay click
+  document.getElementById('aooModal').addEventListener('click', (e) => {
+    if (e.target.id === 'aooModal') closeAooModal();
+  });
+
+  // Modal control functions
+  function showSuccessModal(message) {
+    document.getElementById('successMessage').textContent = message;
+    document.getElementById('successModal').classList.add('active');
+  }
+
+  function closeSuccessModal() {
+    document.getElementById('successModal').classList.remove('active');
+  }
+
+  function showErrorModal(message) {
+    document.getElementById('errorMessage').textContent = message;
+    document.getElementById('errorModal').classList.add('active');
+  }
+
+  function closeErrorModal() {
+    document.getElementById('errorModal').classList.remove('active');
+  }
+
+  // Close modals on overlay click
+  document.getElementById('successModal').addEventListener('click', (e) => {
+    if (e.target.id === 'successModal') closeSuccessModal();
+  });
+
+  document.getElementById('errorModal').addEventListener('click', (e) => {
+    if (e.target.id === 'errorModal') closeErrorModal();
+  });
+
+  function closeRejectConfirmModal() {
+    document.getElementById('rejectConfirmModal').classList.remove('active');
+    PENDING_REJECT_CP_ID = null;
+  }
+
+  document.getElementById('rejectConfirmModal').addEventListener('click', (e) => {
+    if (e.target.id === 'rejectConfirmModal') closeRejectConfirmModal();
+  });
+
+  // Initialize
+  loadDistricts();
+  loadCpApplicationsNew();
+</script>
+
+</body>
+</html>

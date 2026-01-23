@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>My Incentives</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+<body>
+
+<div class="leads-container">
+  <!-- Header -->
+  <div class="leads-header">
+    <h1>My Incentives</h1>
+    <p>Approved incentives will be credited after verification.</p>
+  </div>
+
+  <!-- Incentives Table -->
+  <div class="card">
+    <h3>Incentives Summary</h3>
+
+    <div class="leads-table-wrapper">
+      <table class="leads-table">
+        <thead>
+          <tr>
+            <th>Church / Lead</th>
+            <th>Location</th>
+            <th>Amount (₹)</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="incentivesBody">
+          <tr>
+            <td colspan="4" class="empty-message">No incentives yet.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <button class="btn-secondary" onclick="go('dashboard.html')">← Back to Dashboard</button>
+  </div>
+</div>
+
+<script src="../assets/js/api.js"></script>
+<script src="../assets/js/cp.js"></script>
+</body>
+</html>
