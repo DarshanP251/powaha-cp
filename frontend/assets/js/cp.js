@@ -11,7 +11,7 @@ function authHeaders() {
 
   // 🔐 Redirect ONLY for protected CP pages
   if (!token) {
-    window.location.href = '/frontend/cp/index.html';
+    window.location.href = '/cp/index.html';
     throw new Error('NO_AUTH');
   }
 
@@ -28,7 +28,7 @@ function logout() {
 }
 
 function go(page) {
-  window.location.href = `/frontend/cp/${page}`;
+  window.location.href = `/cp/${page}`;
 }
 
 /* =========================
@@ -359,7 +359,7 @@ async function applyCp() {
 
     localStorage.setItem('lastAppliedEmail', payload.email);
     alert('Application submitted successfully. Await admin approval.');
-    window.location.href = '/frontend/cp/status.html';
+    window.location.href = '/cp/status.html';
 
   } catch (err) {
     console.error('CP Apply error:', err);
