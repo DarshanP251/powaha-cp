@@ -23,18 +23,20 @@ async function ensureAdmin() {
   try {
     const adminEmail = "admin@powaha.com";
 
-    const existing = await prisma.user.findUnique({
+    const existing = await prisma.users.findUnique({
       where: { email: adminEmail },
     });
 
     if (!existing) {
       const hashed = await bcrypt.hash("admin123", 10);
 
-      await prisma.user.create({
+      await prisma.users.create({
         data: {
+          user_id: "admin_001",
           email: adminEmail,
           password: hashed,
           role: "ADMIN",
+          created_at: new Date(),
         },
       });
 
@@ -46,6 +48,7 @@ async function ensureAdmin() {
     console.error("❌ ensureAdmin error:", err);
   }
 }
+
 
 await ensureAdmin();
 
