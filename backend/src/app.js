@@ -25,4 +25,4 @@ app.get('/', (req, res) => {
   res.send('POWAHA CP Backend Running');
 });
 
-module.exports = app;
+export default app;
