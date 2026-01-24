@@ -1323,90 +1323,109 @@ table td:last-child {
   color: #374151;
 }
 
-/* Responsive */
-@media (max-width: 1024px) {
-  .admin-sidebar {
-    width: 240px;
-  }
-
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .form-row {
-    grid-template-columns: 1fr;
-  }
+/* ===== Modal Overlay ===== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
 }
 
-@media (max-width: 768px) {
-  body {
-    padding: 20px;
-  }
+/* ===== Modal Box ===== */
+.modal {
+  background: #ffffff;
+  width: 420px;
+  max-width: 95%;
+  border-radius: 12px;
+  padding: 20px 22px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  animation: modalFadeIn 0.25s ease-out;
+}
 
-  header h1 {
-    font-size: 23px;
-  }
+/* ===== Modal Header ===== */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
 
-  button {
-    width: 100%;
-  }
+.modal-header h3 {
+  font-size: 18px;
+  font-weight: 600;
+}
 
-  .dashboard-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 14px;
-  }
+.modal-close {
+  font-size: 20px;
+  cursor: pointer;
+  color: #555;
+}
 
-  .admin-container {
-    flex-direction: column;
-  }
+/* ===== Modal Body ===== */
+.modal-body {
+  margin-top: 10px;
+}
 
-  .admin-sidebar {
-    width: 100%;
-    border-right: none;
-    border-bottom: 1px solid #e5e7eb;
-    padding: 16px 0;
-    max-height: none;
-  }
+.modal-body label {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 6px;
+  display: block;
+}
 
-  .sidebar-nav {
-    flex-direction: row;
-    overflow-x: auto;
-    gap: 8px;
-  }
+/* ===== AOO Checkbox Grid ===== */
+.aoo-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+}
 
-  .nav-btn {
-    padding: 10px 16px;
-    white-space: nowrap;
-  }
+.aoo-grid label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+}
 
-  .admin-main {
-    padding: 20px;
-  }
+/* ===== Modal Footer ===== */
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
 
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
+/* ===== Buttons ===== */
+.btn-approve {
+  background: #16a34a;
+  color: #fff;
+}
 
-  .quick-actions {
-    grid-template-columns: 1fr;
-  }
+.btn-reject {
+  background: #ef4444;
+  color: #fff;
+}
 
-  .admin-table {
-    font-size: 12px;
-  }
+.btn-close {
+  background: #1f2937;
+  color: #fff;
+}
 
-  .admin-table thead th,
-  .admin-table tbody td {
-    padding: 10px;
+/* ===== Animation ===== */
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
   }
-
-  .modal-content {
-    width: 95%;
-    margin: 30% auto;
-  }
-
-  .form-row {
-    grid-template-columns: 1fr;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

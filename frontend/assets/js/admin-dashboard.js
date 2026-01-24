@@ -203,6 +203,28 @@ async function loadActivityLog() {
     console.error('Load activity log error:', err);
   }
 }
+// Render Area of Operation (AOO) options as checkboxes
+function renderAOOOptions(containerId) {
+  const aooOptions = [
+    "Bangalore Urban",
+    "Mysuru",
+    "Tumakuru",
+    "District A",
+    "District B",
+  ];
+
+  const container = document.getElementById(containerId);
+  container.innerHTML = "";
+
+  aooOptions.forEach(area => {
+    container.innerHTML += `
+      <label>
+        <input type="checkbox" value="${area}" />
+        ${area}
+      </label>
+    `;
+  });
+}
 
 /* =========================
    APPROVE/REJECT APPLICATIONS
@@ -210,11 +232,16 @@ async function loadActivityLog() {
 
 let currentCpId = null;
 
-function openApplicationModal(cpId) {
-  currentCpId = cpId;
-  document.getElementById('applicationModal').style.display = 'block';
-  // Load CP details
-  loadCpApplicationDetails(cpId);
+function openApplicationModal(applicationId) {
+  document.getElementById("applicationModal").style.display = "flex";
+
+  // Load AOO checkboxes
+  renderAOOOptions("aooContainer");
+
+  window.currentApplicationId = applicationId;
+  currentCpId = applicationId;
+  // Optionally, load CP details if needed
+  loadCpApplicationDetails(applicationId);
 }
 
 function closeApplicationModal() {
@@ -239,17 +266,7 @@ async function loadCpApplicationDetails(cpId) {
         <p><strong>Status:</strong> ${app.status}</p>
       </div>
     `;
-
-    // Load AOO checkboxes
-    const aooOptions = ['Bangalore Urban', 'Mysuru', 'Tumakuru', 'District A', 'District B'];
-    const checkboxDiv = document.getElementById('aooCheckboxes');
-    checkboxDiv.innerHTML = aooOptions.map(aoo => `
-      <label>
-        <input type="checkbox" value="${aoo}" />
-        ${aoo}
-      </label>
-    `).join('');
-
+    // AOO checkboxes are now rendered by renderAOOOptions in openApplicationModal
   } catch (err) {
     console.error('Load CP details error:', err);
   }
@@ -257,7 +274,7 @@ async function loadCpApplicationDetails(cpId) {
 
 async function approveCpApplication() {
   const selected = Array.from(
-    document.querySelectorAll('#aooCheckboxes input:checked')
+    document.querySelectorAll('#aooContainer input:checked')
   ).map(el => el.value);
 
   if (!selected.length) {
