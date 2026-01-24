@@ -72,6 +72,9 @@ async function loadApplications() {
       const data = await res.json();
       // Store all applications globally for modal lookup
       window.allApplications = data;
+
+      // Global variable for current application ID
+      let currentApplicationId = null;
       const tbody = document.getElementById("applicationsTable");
       tbody.innerHTML = "";
 
@@ -241,18 +244,13 @@ function renderAOOOptions(containerId) {
 let currentCpId = null;
 
 function openApplicationModal(applicationId) {
+  currentApplicationId = applicationId;
   const modal = document.getElementById("reviewModal");
   if (!modal) {
     console.error("Review modal not found");
     return;
   }
-
-  modal.style.display = "flex";
-
-  // Store application ID globally for approve/reject
-  window.currentApplicationId = applicationId;
-
-  // Load AOO options
+  modal.classList.add("show");
   renderAOOOptions("aooContainer");
 }
   function openApplicationModal(applicationId) {
@@ -279,9 +277,8 @@ function openApplicationModal(applicationId) {
 
 function closeReviewModal() {
   const modal = document.getElementById("reviewModal");
-  if (modal) modal.style.display = "none";
-
-  window.currentApplicationId = null;
+  if (modal) modal.classList.remove("show");
+  currentApplicationId = null;
 }
 
 function closeApplicationModal() {
@@ -313,41 +310,37 @@ async function loadCpApplicationDetails(cpId) {
 }
 
 async function approveApplication() {
-  if (!window.currentApplicationId) {
-    alert("No application selected");
-    return;
-  }
-
-  const selectedAOOs = Array.from(
-    document.querySelectorAll("#aooContainer input[type='checkbox']:checked")
-  ).map(cb => cb.value);
-
-  if (!selectedAOOs.length) {
-    alert("Please select at least one Area of Operation");
-    return;
-  }
-
   try {
+    if (!currentApplicationId) {
+      alert("No application selected");
+      return;
+    }
+
+    const selectedAOOs = Array.from(
+      document.querySelectorAll('input[name="aoo"]:checked')
+    ).map(cb => cb.value);
+
     const res = await fetch(
-        `${API_BASE}/admin/cp/${window.currentCpId}/approve`,
+      `${API_BASE}/admin/cp-applications/approve`,
       {
         method: "POST",
         headers: {
           ...authHeaders(),
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          aoo: selectedAOOs,
-        }),
+          applicationId: currentApplicationId,
+          aoo: selectedAOOs
+        })
       }
     );
 
     if (!res.ok) throw new Error("Approval failed");
 
-    alert("CP approved successfully");
-
+    alert("CP Approved Successfully");
     closeReviewModal();
-    loadApplications(); // refresh table
+    loadApplications();
+
   } catch (err) {
     console.error(err);
     alert("Approval failed");
