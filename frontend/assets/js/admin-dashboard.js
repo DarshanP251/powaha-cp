@@ -203,8 +203,15 @@ async function loadActivityLog() {
     console.error('Load activity log error:', err);
   }
 }
-// Render Area of Operation (AOO) options as checkboxes
+// Render Area of Operation (AOO) options as checkboxes (null-safe)
 function renderAOOOptions(containerId) {
+  const container = document.getElementById(containerId);
+
+  if (!container) {
+    console.error("AOO container not found:", containerId);
+    return;
+  }
+
   const aooOptions = [
     "Bangalore Urban",
     "Mysuru",
@@ -213,7 +220,6 @@ function renderAOOOptions(containerId) {
     "District B",
   ];
 
-  const container = document.getElementById(containerId);
   container.innerHTML = "";
 
   aooOptions.forEach(area => {
@@ -233,15 +239,14 @@ function renderAOOOptions(containerId) {
 let currentCpId = null;
 
 function openApplicationModal(applicationId) {
-  document.getElementById("applicationModal").style.display = "flex";
+  const modal = document.getElementById("reviewModal");
+  if (!modal) return;
 
-  // Load AOO checkboxes
+  modal.style.display = "flex";
+
   renderAOOOptions("aooContainer");
 
   window.currentApplicationId = applicationId;
-  currentCpId = applicationId;
-  // Optionally, load CP details if needed
-  loadCpApplicationDetails(applicationId);
 }
 
 function closeApplicationModal() {
