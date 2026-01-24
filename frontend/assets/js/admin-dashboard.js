@@ -289,35 +289,45 @@ async function loadCpApplicationDetails(cpId) {
   }
 }
 
-async function approveCpApplication() {
-  const selected = Array.from(
-    document.querySelectorAll('#aooContainer input:checked')
-  ).map(el => el.value);
+async function approveApplication() {
+  if (!window.currentApplicationId) {
+    alert("No application selected");
+    return;
+  }
 
-  if (!selected.length) {
-    alert('Please select at least one area of operation');
+  const selectedAOOs = Array.from(
+    document.querySelectorAll("#aooContainer input[type='checkbox']:checked")
+  ).map(cb => cb.value);
+
+  if (!selectedAOOs.length) {
+    alert("Please select at least one Area of Operation");
     return;
   }
 
   try {
-    const res = await fetch(`${API_BASE}/admin/cp/${currentCpId}/approve`, {
-      method: 'POST',
-      headers: authHeaders(),
-      body: JSON.stringify({ aoo: selected })
-    });
+    const res = await fetch(
+      `${API_BASE}/admin/cp-applications/${window.currentApplicationId}/approve`,
+      {
+        method: "POST",
+        headers: {
+          ...authHeaders(),
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          aoo: selectedAOOs,
+        }),
+      }
+    );
 
-    if (!res.ok) {
-      alert('Approval failed');
-      return;
-    }
+    if (!res.ok) throw new Error("Approval failed");
 
-    alert('✅ CP approved successfully');
-    closeApplicationModal();
-    loadApplications();
+    alert("CP approved successfully");
 
+    closeReviewModal();
+    loadApplications(); // refresh table
   } catch (err) {
-    console.error('Approve error:', err);
-    alert('Error approving application');
+    console.error(err);
+    alert("Approval failed");
   }
 }
 
