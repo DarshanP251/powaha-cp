@@ -267,22 +267,21 @@
 </div>
 
 <!-- Modals -->
-<div id="applicationModal" class="modal">
+<div id="reviewModal" class="modal-overlay" style="display:none;">
   <div class="modal-content">
     <div class="modal-header">
       <h3>Review CP Application</h3>
-      <button class="close-btn" onclick="closeApplicationModal()">&times;</button>
+      <button class="close-btn" onclick="closeReviewModal()">&times;</button>
     </div>
     <div class="modal-body">
       <div id="appDetails"></div>
-      <!-- AOO container required for JS to work -->
       <label>Select Area of Operation</label>
       <div id="aooContainer" class="aoo-grid"></div>
     </div>
     <div class="modal-footer">
       <button class="btn-primary" onclick="approveCpApplication()">✅ Approve</button>
       <button class="btn-danger" onclick="rejectCpApplication()">❌ Reject</button>
-      <button class="btn-secondary" onclick="closeApplicationModal()">Close</button>
+      <button class="btn-close" onclick="closeReviewModal()">Close</button>
     </div>
   </div>
 </div>

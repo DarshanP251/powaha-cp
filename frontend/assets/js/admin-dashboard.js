@@ -240,13 +240,25 @@ let currentCpId = null;
 
 function openApplicationModal(applicationId) {
   const modal = document.getElementById("reviewModal");
-  if (!modal) return;
+  if (!modal) {
+    console.error("Review modal not found");
+    return;
+  }
 
   modal.style.display = "flex";
 
-  renderAOOOptions("aooContainer");
-
+  // Store application ID globally for approve/reject
   window.currentApplicationId = applicationId;
+
+  // Load AOO options
+  renderAOOOptions("aooContainer");
+}
+
+function closeReviewModal() {
+  const modal = document.getElementById("reviewModal");
+  if (modal) modal.style.display = "none";
+
+  window.currentApplicationId = null;
 }
 
 function closeApplicationModal() {
