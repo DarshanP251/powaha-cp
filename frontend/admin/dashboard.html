@@ -121,8 +121,15 @@
                 </tr>
               </thead>
               <tbody id="applicationsTable">
-                <tr>
-                  <td colspan="5" class="empty-message">Loading applications...</td>
+                <!-- Example row for correct Review button, will be replaced by JS -->
+                <tr style="display:none;">
+                  <td>Example CP</td>
+                  <td>cp@example.com</td>
+                  <td>9999999999</td>
+                  <td>2026-01-24</td>
+                  <td>
+                    <button class="btn-small" onclick="openApplicationModal('EXAMPLE_ID')">Review</button>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -285,7 +292,6 @@
     </div>
   </div>
 </div>
-
 <script src="../assets/js/api.js"></script>
 <script src="../assets/js/auth.js"></script>
 <script src="../assets/js/admin.js"></script>
