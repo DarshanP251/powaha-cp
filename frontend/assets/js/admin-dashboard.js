@@ -69,35 +69,37 @@ async function loadApplications() {
       return;
     }
 
-    const data = await res.json();
-    const tbody = document.getElementById("applicationsTable");
-    tbody.innerHTML = "";
+      const data = await res.json();
+      // Store all applications globally for modal lookup
+      window.allApplications = data;
+      const tbody = document.getElementById("applicationsTable");
+      tbody.innerHTML = "";
 
-    const pending = data.filter(app => app.status === "SUBMITTED");
+      const pending = data.filter(app => app.status === "SUBMITTED");
 
-    if (!pending.length) {
-      tbody.innerHTML =
-        '<tr><td colspan="5" class="empty-message">No pending applications</td></tr>';
-      return;
-    }
+      if (!pending.length) {
+        tbody.innerHTML =
+          '<tr><td colspan="5" class="empty-message">No pending applications</td></tr>';
+        return;
+      }
 
-    pending.forEach(app => {
-      const cp = app.cp || {};
+      pending.forEach(app => {
+        const cp = app.cp || {};
 
-      tbody.innerHTML += `
-        <tr>
-          <td><strong>${cp.name || "-"}</strong></td>
-          <td>${cp.email || "-"}</td>
-          <td>${cp.mobile || "-"}</td>
-          <td>${new Date(app.created_at).toLocaleDateString()}</td>
-          <td>
-            <button class="btn-small" onclick="openApplicationModal('${app.application_id}')">
-              Review
-            </button>
-          </td>
-        </tr>
-      `;
-    });
+        tbody.innerHTML += `
+          <tr>
+            <td><strong>${cp.name || "-"}</strong></td>
+            <td>${cp.email || "-"}</td>
+            <td>${cp.mobile || "-"}</td>
+            <td>${new Date(app.created_at).toLocaleDateString()}</td>
+            <td>
+              <button class="btn-small" onclick="openApplicationModal('${app.application_id}')">
+                Review
+              </button>
+            </td>
+          </tr>
+        `;
+      });
   } catch (err) {
     console.error("Load applications error:", err);
   }
@@ -253,6 +255,27 @@ function openApplicationModal(applicationId) {
   // Load AOO options
   renderAOOOptions("aooContainer");
 }
+  function openApplicationModal(applicationId) {
+    const modal = document.getElementById("reviewModal");
+    if (!modal) {
+      console.error("Review modal not found");
+      return;
+    }
+
+    modal.style.display = "flex";
+
+    // Store application ID globally for approve/reject
+    window.currentApplicationId = applicationId;
+    // Find and store the CP ID for this application
+    if (window.allApplications && Array.isArray(window.allApplications)) {
+      const app = window.allApplications.find(a => a.application_id === applicationId);
+      window.currentCpId = app && app.cp_id ? app.cp_id : null;
+    } else {
+      window.currentCpId = null;
+    }
+    // Load AOO options
+    renderAOOOptions("aooContainer");
+  }
 
 function closeReviewModal() {
   const modal = document.getElementById("reviewModal");
@@ -306,7 +329,7 @@ async function approveApplication() {
 
   try {
     const res = await fetch(
-      `${API_BASE}/admin/cp-applications/${window.currentApplicationId}/approve`,
+        `${API_BASE}/admin/cp/${window.currentCpId}/approve`,
       {
         method: "POST",
         headers: {
