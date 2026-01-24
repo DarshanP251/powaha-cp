@@ -180,10 +180,17 @@
 
     const aoo = Array.from(SELECTED_AOO);
 
-    const res = await fetch(`${API_BASE}/admin/cp/${PENDING_CP_ID}/approve`, {
+    // FIX: Use correct API endpoint and body
+    const res = await fetch(`${API_BASE}/admin/cp-applications/approve`, {
       method: 'POST',
-      headers: authHeaders(),
-      body: JSON.stringify({ aoo })
+      headers: {
+        ...authHeaders(),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        applicationId: PENDING_CP_ID,
+        aoo: aoo,
+      })
     });
 
     if (res.ok) {
