@@ -73,8 +73,6 @@ async function loadApplications() {
       // Store all applications globally for modal lookup
       window.allApplications = data;
 
-      // Global variable for current application ID
-      let currentApplicationId = null;
       const tbody = document.getElementById("applicationsTable");
       tbody.innerHTML = "";
 
@@ -243,6 +241,7 @@ function renderAOOOptions(containerId) {
 
 let currentCpId = null;
 
+let currentApplicationId = null;
 function openApplicationModal(applicationId) {
   currentApplicationId = applicationId;
   const modal = document.getElementById("reviewModal");
@@ -253,31 +252,9 @@ function openApplicationModal(applicationId) {
   modal.classList.add("show");
   renderAOOOptions("aooContainer");
 }
-  function openApplicationModal(applicationId) {
-    const modal = document.getElementById("reviewModal");
-    if (!modal) {
-      console.error("Review modal not found");
-      return;
-    }
-
-    modal.style.display = "flex";
-
-    // Store application ID globally for approve/reject
-    window.currentApplicationId = applicationId;
-    // Find and store the CP ID for this application
-    if (window.allApplications && Array.isArray(window.allApplications)) {
-      const app = window.allApplications.find(a => a.application_id === applicationId);
-      window.currentCpId = app && app.cp_id ? app.cp_id : null;
-    } else {
-      window.currentCpId = null;
-    }
-    // Load AOO options
-    renderAOOOptions("aooContainer");
-  }
 
 function closeReviewModal() {
-  const modal = document.getElementById("reviewModal");
-  if (modal) modal.classList.remove("show");
+  document.getElementById("reviewModal").classList.remove("show");
   currentApplicationId = null;
 }
 
@@ -320,24 +297,21 @@ async function approveApplication() {
       document.querySelectorAll('input[name="aoo"]:checked')
     ).map(cb => cb.value);
 
-    const res = await fetch(
-      `${API_BASE}/admin/cp-applications/approve`,
-      {
-        method: "POST",
-        headers: {
-          ...authHeaders(),
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          applicationId: currentApplicationId,
-          aoo: selectedAOOs
-        })
-      }
-    );
+    const res = await fetch(`${API_BASE}/admin/cp-applications/approve`, {
+      method: "POST",
+      headers: {
+        ...authHeaders(),
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        applicationId: currentApplicationId,
+        aoo: selectedAOOs
+      })
+    });
 
     if (!res.ok) throw new Error("Approval failed");
 
-    alert("CP Approved Successfully");
+    alert("Approved successfully");
     closeReviewModal();
     loadApplications();
 

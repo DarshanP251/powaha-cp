@@ -154,8 +154,8 @@ document.addEventListener('change', (e) => {
   if (e.target.type !== 'checkbox') return;
 
   const dropdown = e.target.closest('.aoo-dropdown');
-  const cpId = dropdown.dataset.cp;
-  const approveBtn = document.getElementById(`approve-${cpId}`);
+  // No more dataset usage. Instead, find cpId from approve button id if needed.
+  const approveBtn = dropdown.querySelector('button[id^="approve-"]');
 
   const selected = [...dropdown.querySelectorAll('input:checked')]
     .map(cb => cb.value);
