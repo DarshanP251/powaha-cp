@@ -10,11 +10,12 @@ if (!applicationId) {
   window.location.href = "/admin/dashboard.html";
 }
 
+let currentCpId = null;
+let preferredAOO = [];
+
 /* =========================
    LOAD APPLICATION
 ========================= */
-
-let currentCpId = null;
 
 async function loadApplication() {
   try {
@@ -33,15 +34,10 @@ async function loadApplication() {
     }
 
     currentCpId = app.cp_id;
+    preferredAOO = app.pref_aoo || [];
 
-    document.getElementById("cpDetails").innerHTML = `
-      <p><strong>Name:</strong> ${app.cp?.name || "-"}</p>
-      <p><strong>Email:</strong> ${app.cp?.email || "-"}</p>
-      <p><strong>Mobile:</strong> ${app.cp?.mobile || "-"}</p>
-      <p><strong>Status:</strong> ${app.status}</p>
-    `;
-
-    renderAOOOptions();
+    renderCpDetails(app);
+    renderAOO(preferredAOO);
 
     document.getElementById("approveBtn").onclick = approveCp;
     document.getElementById("rejectBtn").onclick = rejectCp;
@@ -55,27 +51,48 @@ async function loadApplication() {
 loadApplication();
 
 /* =========================
-   AOO RENDER
+   RENDER CP INFO
 ========================= */
 
-function renderAOOOptions() {
+function renderCpDetails(app) {
+  document.getElementById("cpDetails").innerHTML = `
+    <div>
+      <label>Name</label>
+      <p>${app.cp?.name || "-"}</p>
+    </div>
+    <div>
+      <label>Email</label>
+      <p>${app.cp?.email || "-"}</p>
+    </div>
+    <div>
+      <label>Mobile</label>
+      <p>${app.cp?.mobile || "-"}</p>
+    </div>
+    <div>
+      <label>Status</label>
+      <p><span class="badge pending">${app.status}</span></p>
+    </div>
+  `;
+}
+
+/* =========================
+   RENDER ONLY SELECTED AOO
+========================= */
+
+function renderAOO(areas) {
   const container = document.getElementById("aooContainer");
-
-  const areas = [
-    "Bangalore Urban",
-    "Mysuru",
-    "Tumakuru",
-    "District A",
-    "District B"
-  ];
-
   container.innerHTML = "";
+
+  if (!areas.length) {
+    container.innerHTML = `<p class="muted-text">No preferred areas selected</p>`;
+    return;
+  }
 
   areas.forEach(area => {
     container.innerHTML += `
-      <label>
-        <input type="checkbox" value="${area}" />
-        ${area}
+      <label class="aoo-item">
+        <input type="checkbox" value="${area}" checked />
+        <span>${area}</span>
       </label>
     `;
   });
@@ -89,8 +106,13 @@ async function approveCp() {
   if (!currentCpId) return;
 
   const selectedAOOs = Array.from(
-    document.querySelectorAll('#aooContainer input[type="checkbox"]:checked')
+    document.querySelectorAll('#aooContainer input:checked')
   ).map(cb => cb.value);
+
+  if (!selectedAOOs.length) {
+    alert("Please select at least one AOO");
+    return;
+  }
 
   try {
     const res = await fetch(
