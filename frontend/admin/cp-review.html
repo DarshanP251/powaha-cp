@@ -3,28 +3,33 @@
 <head>
   <meta charset="UTF-8" />
   <title>Review CP Application</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="../assets/css/admin.css" />
 </head>
 <body>
 
-<div class="admin-wrapper">
-  <div class="section-card">
-    <h2>Review CP Application</h2>
-    <div id="cpDetails">Loading...</div>
+  <div class="admin-wrapper">
+    <div class="section-card">
+      <h2>Review CP Application</h2>
 
-    <h3>Assign Area of Operation</h3>
-    <div id="aooContainer"></div>
+      <div id="cpDetails" class="info-block">
+        Loading application...
+      </div>
 
-    <div class="action-row">
-      <button class="btn-approve" onclick="approveCp()">Approve</button>
-      <button class="btn-danger" onclick="rejectCp()">Reject</button>
-      <button class="btn-close" onclick="goBack()">Back</button>
+      <h3>Assign Area of Operation</h3>
+      <div id="aooContainer" class="checkbox-group"></div>
+
+      <div class="action-row">
+        <button class="btn-primary" id="approveBtn">Approve</button>
+        <button class="btn-danger" id="rejectBtn">Reject</button>
+        <button class="btn-secondary" onclick="goBack()">Back</button>
+      </div>
     </div>
   </div>
-</div>
 
-<script src="../assets/js/api.js"></script>
-<script src="../assets/js/admin.js"></script>
-<script src="./cp-review.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/admin.js"></script>
+  <script src="./cp-review.js"></script>
+
 </body>
 </html>

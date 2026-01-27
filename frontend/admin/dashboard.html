@@ -23,7 +23,8 @@
     </div>
 
     <div class="admin-container">
-      <!-- Sidebar Navigation -->
+
+      <!-- Sidebar -->
       <div class="admin-sidebar">
         <nav class="sidebar-nav">
           <button class="nav-btn active" onclick="switchAdminTab('overview')">📊 Overview</button>
@@ -38,9 +39,8 @@
       <!-- Main Content -->
       <div class="admin-main">
 
-        <!-- OVERVIEW TAB -->
+        <!-- OVERVIEW -->
         <div id="overview-tab" class="admin-tab active">
-          <!-- Stats Grid -->
           <div class="stats-grid">
             <div class="stat-card highlight">
               <div class="stat-icon">📩</div>
@@ -74,41 +74,14 @@
               </div>
             </div>
           </div>
-
-          <!-- Quick Actions -->
-          <div class="section-card">
-            <h3>Quick Actions</h3>
-            <div class="action-grid">
-              <button class="action-card" onclick="switchAdminTab('applications')">
-                <span class="action-icon">📋</span>
-                <span class="action-title">Review Applications</span>
-                <span class="action-desc">Pending CP approvals</span>
-              </button>
-              <button class="action-card" onclick="switchAdminTab('incentives')">
-                <span class="action-icon">💸</span>
-                <span class="action-title">Approve Incentives</span>
-                <span class="action-desc">Pending payouts</span>
-              </button>
-              <button class="action-card" onclick="switchAdminTab('partners')">
-                <span class="action-icon">🤝</span>
-                <span class="action-title">Manage Partners</span>
-                <span class="action-desc">Active CPs</span>
-              </button>
-              <button class="action-card" onclick="switchAdminTab('settings')">
-                <span class="action-icon">⚙️</span>
-                <span class="action-title">Configuration</span>
-                <span class="action-desc">System settings</span>
-              </button>
-            </div>
-          </div>
         </div>
 
-        <!-- APPLICATIONS TAB -->
+        <!-- APPLICATIONS -->
         <div id="applications-tab" class="admin-tab">
           <div class="section-card">
             <div class="card-header">
               <h3>Pending CP Applications</h3>
-              <input type="text" id="appSearch" placeholder="Search by name/email..." class="search-input" />
+              <input type="text" placeholder="Search by name/email..." class="search-input" />
             </div>
 
             <div class="table-wrapper">
@@ -123,17 +96,9 @@
                   </tr>
                 </thead>
                 <tbody id="applicationsTable">
-                  <!-- Example row for correct Review button, will be replaced by JS -->
-                  <tr style="display:none;">
-                    <td>Example CP</td>
-                    <td>cp@example.com</td>
-                    <td>9999999999</td>
-                    <td>2026-01-24</td>
-                    <td>
-                      <button class="btn-small" onclick="goToCpReview('EXAMPLE_ID')">
-                        Review
-                      </button>
-
+                  <tr>
+                    <td colspan="5" class="empty-message">
+                      Loading applications...
                     </td>
                   </tr>
                 </tbody>
@@ -142,29 +107,29 @@
           </div>
         </div>
 
-        <!-- INCENTIVES TAB -->
+        <!-- INCENTIVES -->
         <div id="incentives-tab" class="admin-tab">
           <div class="section-card">
             <div class="card-header">
               <h3>Pending Incentives Approval</h3>
-              <input type="text" id="incSearch" placeholder="Search by CP name..." class="search-input" />
             </div>
 
             <div class="table-wrapper">
               <table class="admin-table">
                 <thead>
                   <tr>
-                    <th>Church / Lead</th>
-                    <th>CP Name</th>
-                    <th>Amount (₹)</th>
-                    <th>Lead Stage</th>
+                    <th>Lead</th>
+                    <th>CP</th>
+                    <th>Amount</th>
                     <th>Status</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody id="incentivesTable">
                   <tr>
-                    <td colspan="6" class="empty-message">Loading incentives...</td>
+                    <td colspan="5" class="empty-message">
+                      Loading incentives...
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -172,29 +137,28 @@
           </div>
         </div>
 
-        <!-- PARTNERS TAB -->
+        <!-- PARTNERS -->
         <div id="partners-tab" class="admin-tab">
           <div class="section-card">
             <div class="card-header">
               <h3>Active Community Partners</h3>
-              <input type="text" id="partnerSearch" placeholder="Search by name..." class="search-input" />
             </div>
 
             <div class="table-wrapper">
               <table class="admin-table">
                 <thead>
                   <tr>
-                    <th>CP Name</th>
-                    <th>Email</th>
-                    <th>Area of Operation</th>
-                    <th>Active Leads</th>
+                    <th>CP ID</th>
+                    <th>AOO</th>
                     <th>Status</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody id="partnersTable">
                   <tr>
-                    <td colspan="6" class="empty-message">Loading partners...</td>
+                    <td colspan="4" class="empty-message">
+                      Loading partners...
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -202,74 +166,21 @@
           </div>
         </div>
 
-        <!-- SETTINGS TAB -->
+        <!-- SETTINGS -->
         <div id="settings-tab" class="admin-tab">
-          <div class="settings-grid">
-            <div class="section-card">
-              <h3>💰 Incentive Configuration</h3>
-              <p class="card-desc">Amount credited when a lead is marked CLOSED</p>
-              <div class="form-group">
-                <label>Incentive Amount (₹)</label>
-                <input id="incentiveAmount" type="number" placeholder="e.g., 500" class="input-field" />
-              </div>
-              <button class="btn-primary" onclick="updateIncentiveConfig()">Save Configuration</button>
-            </div>
-
-            <div class="section-card">
-              <h3>📧 Email Configuration</h3>
-              <p class="card-desc">Configure transactional emails for CPs</p>
-              <div class="form-group">
-                <label>Admin Email</label>
-                <input type="email" placeholder="admin@powaha.com" class="input-field" />
-              </div>
-              <div class="form-group">
-                <label>Support Email</label>
-                <input type="email" placeholder="support@powaha.com" class="input-field" />
-              </div>
-              <button class="btn-primary" onclick="saveEmailConfig()">Save Email Settings</button>
-            </div>
-
-            <div class="section-card">
-              <h3>🔐 System Settings</h3>
-              <p class="card-desc">General platform configuration</p>
-              <div class="form-group">
-                <label>
-                  <input type="checkbox" /> Enable API Access for CPs
-                </label>
-              </div>
-              <div class="form-group">
-                <label>
-                  <input type="checkbox" checked /> Require AOO Assignment
-                </label>
-              </div>
-              <button class="btn-primary" onclick="saveSystemSettings()">Save System Settings</button>
-            </div>
-
-            <div class="section-card danger">
-              <h3>⚠️ Advanced Actions</h3>
-              <p class="card-desc">Dangerous operations - use with caution</p>
-              <button class="btn-danger" onclick="exportData()">📥 Export All Data</button>
-              <button class="btn-danger" onclick="clearLogs()">🗑️ Clear Activity Logs</button>
-            </div>
+          <div class="section-card">
+            <h3>💰 Incentive Configuration</h3>
+            <input id="incentiveAmount" type="number" placeholder="Amount in ₹" />
+            <button class="btn-primary" onclick="updateIncentiveConfig()">Save</button>
           </div>
         </div>
 
-        <!-- ACTIVITY TAB -->
+        <!-- ACTIVITY -->
         <div id="activity-tab" class="admin-tab">
           <div class="section-card">
-            <div class="card-header">
-              <h3>Activity Log</h3>
-              <select id="activityFilter" class="filter-select" onchange="filterActivity()">
-                <option value="">All Activities</option>
-                <option value="CP_APPROVED">CP Approved</option>
-                <option value="CP_REJECTED">CP Rejected</option>
-                <option value="INCENTIVE_APPROVED">Incentive Approved</option>
-                <option value="LEAD_CREATED">Lead Created</option>
-              </select>
-            </div>
-
-            <div class="activity-list">
-              <div id="activityItems" class="empty-message">Loading activity log...</div>
+            <h3>Activity Log</h3>
+            <div id="activityItems" class="empty-message">
+              Loading activity...
             </div>
           </div>
         </div>
@@ -278,22 +189,11 @@
     </div>
   </div>
 
-  <!-- Modals -->
-  <script>
-    function goToCpReview(appId) {
-      if (!appId) {
-        alert("Invalid application ID");
-        return;
-      }
-      window.location.href = `cp-review.html?app_id=${appId}`;
-    }
-  </script>
-
+  <!-- Scripts -->
   <script src="../assets/js/api.js"></script>
   <script src="../assets/js/auth.js"></script>
   <script src="../assets/js/admin.js"></script>
   <script src="../assets/js/admin-dashboard.js"></script>
 
 </body>
-
 </html>
