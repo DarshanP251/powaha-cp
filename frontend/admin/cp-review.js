@@ -103,13 +103,17 @@ function renderAOO(areas) {
 
   areas.forEach(area => {
     container.innerHTML += `
-      <label class="aoo-item">
-        <input type="checkbox" value="${area}" checked />
-        <span>${area}</span>
-      </label>
+      <div class="aoo-item">
+        <label class="aoo-checkbox">
+          <input type="checkbox" value="${area}" checked />
+          <span class="checkmark"></span>
+        </label>
+        <div class="aoo-label">${area}</div>
+      </div>
     `;
   });
 }
+
 
 /* =========================
    APPROVE / REJECT

@@ -1463,3 +1463,56 @@ table td:last-child {
   display: flex;
   gap: 12px;
 }
+
+
+/* =========================
+   CP REVIEW – AOO ALIGNMENT
+========================= */
+
+.aoo-grid,
+#aooContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.aoo-item {
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  align-items: center;
+  padding: 14px 16px;
+  background: #f9fafb;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+}
+
+.aoo-item:hover {
+  background: #f3f4f6;
+}
+
+.aoo-checkbox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.aoo-checkbox input {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.aoo-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #111827;
+}
+
+/* Action buttons spacing */
+.action-row {
+  margin-top: 28px;
+  display: flex;
+  gap: 12px;
+}
+ 
