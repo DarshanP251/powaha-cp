@@ -10,6 +10,10 @@ if (!applicationId) {
   window.location.href = "/admin/dashboard.html";
 }
 
+/* =========================
+   STATE
+========================= */
+
 let currentCpId = null;
 let preferredAOO = [];
 
@@ -23,10 +27,12 @@ async function loadApplication() {
       headers: authHeaders()
     });
 
-    if (!res.ok) throw new Error();
+    if (!res.ok) throw new Error("Fetch failed");
 
     const applications = await res.json();
-    const app = applications.find(a => a.application_id === applicationId);
+    const app = applications.find(
+      a => a.application_id === applicationId
+    );
 
     if (!app) {
       alert("Application not found");
@@ -34,7 +40,10 @@ async function loadApplication() {
     }
 
     currentCpId = app.cp_id;
-    preferredAOO = app.pref_aoo || [];
+
+    // ✅ CORRECT SOURCE
+    preferredAOO =
+      app.application_data?.preferred_aoo || [];
 
     renderCpDetails(app);
     renderAOO(preferredAOO);
@@ -43,6 +52,7 @@ async function loadApplication() {
     document.getElementById("rejectBtn").onclick = rejectCp;
 
   } catch (err) {
+    console.error(err);
     alert("Failed to load CP application");
     goBack();
   }
@@ -55,18 +65,20 @@ loadApplication();
 ========================= */
 
 function renderCpDetails(app) {
+  const data = app.application_data || {};
+
   document.getElementById("cpDetails").innerHTML = `
     <div>
       <label>Name</label>
-      <p>${app.cp?.name || "-"}</p>
+      <p>${data.name || app.cp?.name || "-"}</p>
     </div>
     <div>
       <label>Email</label>
-      <p>${app.cp?.email || "-"}</p>
+      <p>${data.email || app.cp?.email || "-"}</p>
     </div>
     <div>
       <label>Mobile</label>
-      <p>${app.cp?.mobile || "-"}</p>
+      <p>${data.mobile || app.cp?.mobile || "-"}</p>
     </div>
     <div>
       <label>Status</label>
@@ -76,15 +88,16 @@ function renderCpDetails(app) {
 }
 
 /* =========================
-   RENDER ONLY SELECTED AOO
+   RENDER DYNAMIC AOO (CP SELECTED)
 ========================= */
 
 function renderAOO(areas) {
   const container = document.getElementById("aooContainer");
   container.innerHTML = "";
 
-  if (!areas.length) {
-    container.innerHTML = `<p class="muted-text">No preferred areas selected</p>`;
+  if (!Array.isArray(areas) || !areas.length) {
+    container.innerHTML =
+      `<p class="muted-text">No AOO selected by CP</p>`;
     return;
   }
 
@@ -132,7 +145,8 @@ async function approveCp() {
     alert("✅ CP approved");
     window.location.href = "/admin/dashboard.html";
 
-  } catch {
+  } catch (err) {
+    console.error(err);
     alert("Approval failed");
   }
 }
@@ -155,7 +169,8 @@ async function rejectCp() {
     alert("❌ CP rejected");
     window.location.href = "/admin/dashboard.html";
 
-  } catch {
+  } catch (err) {
+    console.error(err);
     alert("Rejection failed");
   }
 }
