@@ -319,24 +319,42 @@ async function loadCpStatus() {
 
 
 /* =========================
-   CP APPLY
+   CP APPLY (FIXED & SAFE)
 ========================= */
 
 async function applyCp() {
   localStorage.removeItem('token');
+
+  // 🔐 Safely read AOO (dynamic)
+  const preferredAoo =
+    typeof window.getSelectedAoo === 'function'
+      ? window.getSelectedAoo()
+      : [];
+
   const payload = {
-    name: document.getElementById('name').value.trim(),
-    email: document.getElementById('email').value.trim(),
-    mobile: document.getElementById('mobile').value.trim(),
-    city: document.getElementById('city').value.trim(),
-    state: document.getElementById('state').value.trim(),
-    country: document.getElementById('country').value,
-    background: document.getElementById('background').value.trim(),
-    experience: document.getElementById('experience').value.trim(),
-    preferred_aoo: window.getSelectedAoo(),
-    password: document.getElementById('password').value,
-    declaration: document.getElementById('declaration').checked
+    name: document.getElementById('name')?.value.trim(),
+    email: document.getElementById('email')?.value.trim(),
+    mobile: document.getElementById('mobile')?.value.trim(),
+    city: document.getElementById('city')?.value.trim(),
+    state: document.getElementById('state')?.value.trim(),
+    country: document.getElementById('country')?.value || 'India',
+    preferred_aoo: preferredAoo, // ✅ ARRAY
+    password: document.getElementById('password')?.value,
+    declaration: document.getElementById('declaration')?.checked
   };
+
+  // 🛑 Basic validation
+  if (
+    !payload.name ||
+    !payload.email ||
+    !payload.mobile ||
+    !payload.city ||
+    !payload.state ||
+    !payload.password
+  ) {
+    alert('Please fill all required fields');
+    return;
+  }
 
   if (!payload.declaration) {
     alert('You must accept the declaration');
@@ -368,6 +386,7 @@ async function applyCp() {
 }
 
 window.applyCp = applyCp;
+
 
 
 /* =========================
