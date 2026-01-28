@@ -339,3 +339,7 @@ select[multiple] option:hover {
 .suggestions div:hover {
   background: #f2f2f2;
 }
+
+#preferredAoo {
+  display: none;
+}

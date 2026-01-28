@@ -101,15 +101,38 @@ selectEl.addEventListener('change', () => {
 
 function updateAoo() {
   const state = stateInput.value;
-  const districtQuery = cityInput.value.toLowerCase();
+  const city = cityInput.value.trim().toLowerCase();
 
-  const filtered = ALL_AOO.filter(item =>
-    (!state || item.state === state) &&
-    item.value.toLowerCase().includes(districtQuery)
+  if (!state || !city) return;
+
+  const matches = ALL_AOO.filter(item =>
+    item.state === state &&
+    item.value.toLowerCase() === city
   );
 
-  renderAooOptions(filtered);
+  SELECTED_AOO.clear();
+
+  if (matches.length === 1) {
+    // ✅ Auto-select single district
+    SELECTED_AOO.add(matches[0].value);
+
+    selectEl.innerHTML = '';
+    const opt = document.createElement('option');
+    opt.value = matches[0].value;
+    opt.textContent = matches[0].label;
+    opt.selected = true;
+    selectEl.appendChild(opt);
+
+    selectEl.style.display = 'none'; // 🔑 keep hidden
+  }
+
+  else if (matches.length > 1) {
+    // ⚠️ Rare case: same district name in multiple states
+    renderAooOptions(matches);
+    selectEl.style.display = 'block';
+  }
 }
+
 
 function renderAooOptions(list) {
   selectEl.innerHTML = '';
