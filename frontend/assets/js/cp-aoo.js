@@ -99,39 +99,39 @@ selectEl.addEventListener('change', () => {
   });
 });
 
+const aooSearchInput = document.getElementById('aooSearch');
+
 function updateAoo() {
-  const state = stateInput.value;
+  const state = stateInput.value.trim();
   const city = cityInput.value.trim().toLowerCase();
+  const query = aooSearchInput.value.trim().toLowerCase();
 
-  if (!state || !city) return;
-
-  const matches = ALL_AOO.filter(item =>
-    item.state === state &&
-    item.value.toLowerCase() === city
-  );
-
-  SELECTED_AOO.clear();
-
-  if (matches.length === 1) {
-    // ✅ Auto-select single district
-    SELECTED_AOO.add(matches[0].value);
-
-    selectEl.innerHTML = '';
-    const opt = document.createElement('option');
-    opt.value = matches[0].value;
-    opt.textContent = matches[0].label;
-    opt.selected = true;
-    selectEl.appendChild(opt);
-
-    selectEl.style.display = 'none'; // 🔑 keep hidden
+  if (!state) {
+    selectEl.style.display = 'none';
+    return;
   }
 
-  else if (matches.length > 1) {
-    // ⚠️ Rare case: same district name in multiple states
-    renderAooOptions(matches);
-    selectEl.style.display = 'block';
+  const filtered = ALL_AOO.filter(item => {
+    if (item.state !== state) return false;
+
+    // filter by city keyword (soft match)
+    if (city && !item.value.toLowerCase().includes(city)) return false;
+
+    // filter by AOO search input
+    if (query && !item.value.toLowerCase().includes(query)) return false;
+
+    return true;
+  });
+
+  if (!filtered.length) {
+    selectEl.style.display = 'none';
+    return;
   }
+
+  renderAooOptions(filtered);
+  selectEl.style.display = 'block';
 }
+
 
 
 function renderAooOptions(list) {
