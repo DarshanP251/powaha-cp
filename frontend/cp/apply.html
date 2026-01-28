@@ -14,52 +14,52 @@
 
       <form id="cpApplyForm" class="cp-form" onsubmit="event.preventDefault(); applyCp();">
 
-  <h2>Community Partner Application</h2>
-  <p class="subtitle">Fill in your details to apply</p>
+        <h2>Community Partner Application</h2>
+        <p class="subtitle">Fill in your details to apply</p>
 
-  <div class="section">
-    <h4>Basic Information</h4>
-    <div class="grid-2">
-      <input id="name" placeholder="Full Name" required />
-      <input id="email" type="email" placeholder="Email" required />
-      <input id="mobile" placeholder="Mobile Number" required />
-      <input id="city" placeholder="City / District" required />
-      <input id="state" placeholder="State" required />
-      <input id="country" value="India" readonly />
-    </div>
-  </div>
+        <div class="section">
+          <h4>Basic Information</h4>
+          <div class="grid-2">
+            <input id="name" placeholder="Full Name" required />
+            <input id="email" type="email" placeholder="Email" required />
+            <input id="mobile" placeholder="Mobile Number" required />
+
+            <input id="state" placeholder="State" autocomplete="off" required />
+            <div id="stateSuggestions" class="suggestions"></div>
+
+            <input id="city" placeholder="City / District" autocomplete="off" required />
+            <div id="districtSuggestions" class="suggestions"></div>
+
+            <input id="country" value="India" readonly />
+          </div>
+        </div>
 
 
-  <div class="section">
-    <h4>Preferred Area of Operation</h4>
+        <div class="section">
+          <h4>Preferred Area of Operation</h4>
 
-    <input
-      type="text"
-      id="aooSearch"
-      placeholder="Search district..."
-      oninput="filterAoo()"
-    />
+          <input type="text" id="aooSearch" placeholder="Search district..." oninput="filterAoo()" />
 
-    <select id="preferredAoo" multiple></select>
-  </div>
+          <select id="preferredAoo" multiple></select>
+        </div>
 
-  <div class="section">
-    <h4>Enter Password</h4>
-    <input id="password" type="password" placeholder="Create Password" required />
-  </div>
+        <div class="section">
+          <h4>Enter Password</h4>
+          <input id="password" type="password" placeholder="Create Password" required />
+        </div>
 
-  <div class="declaration-row">
-    <input type="checkbox" id="declaration" />
-    <label for="declaration">
-      I declare that the information provided is true and accurate to the best of my knowledge
-    </label>
-  </div>
+        <div class="declaration-row">
+          <input type="checkbox" id="declaration" />
+          <label for="declaration">
+            I declare that the information provided is true and accurate to the best of my knowledge
+          </label>
+        </div>
 
-  <button type="submit" class="primary-btn">
-    Submit Application
-  </button>
+        <button type="submit" class="primary-btn">
+          Submit Application
+        </button>
 
-</form>
+      </form>
 
 
     </div>
@@ -68,86 +68,7 @@
   <!-- SCRIPTS -->
   <script src="../assets/js/api.js"></script>
   <script src="../assets/js/cp.js"></script>
-
-  <!-- LOAD DISTRICTS -->
-  <script>
-    let ALL_AOO = [];
-    let SELECTED_AOO = new Set();
-
-    const selectEl = document.getElementById('preferredAoo');
-    const searchEl = document.getElementById('aooSearch');
-
-    // Load districts
-    fetch('../assets/data/districts.json')
-      .then(res => res.json())
-      .then(data => {
-        data.forEach(item => {
-          if (item.State && item.District) {
-            ALL_AOO.push({
-              value: item.District,
-              label: `${item.District}, ${item.State}`
-            });
-          }
-        });
-
-        renderAooOptions(ALL_AOO);
-      })
-      .catch(err => console.error('AOO load failed', err));
-
-    // Track selections
-    selectEl.addEventListener('change', () => {
-      Array.from(selectEl.options).forEach(opt => {
-        if (opt.selected) {
-          SELECTED_AOO.add(opt.value);
-        } else {
-          SELECTED_AOO.delete(opt.value);
-        }
-      });
-    });
-
-    function renderAooOptions(list) {
-      selectEl.innerHTML = '';
-
-      if (!list.length) {
-        const opt = document.createElement('option');
-        opt.textContent = 'No matching districts';
-        opt.disabled = true;
-        selectEl.appendChild(opt);
-        return;
-      }
-
-      list.forEach(item => {
-        const opt = document.createElement('option');
-        opt.value = item.value;
-        opt.textContent = item.label;
-
-        // 🔑 Preserve selection
-        if (SELECTED_AOO.has(item.value)) {
-          opt.selected = true;
-        }
-
-        selectEl.appendChild(opt);
-      });
-    }
-
-    function filterAoo() {
-      const query = searchEl.value.toLowerCase();
-
-      const filtered = ALL_AOO.filter(item =>
-        item.label.toLowerCase().includes(query)
-      );
-
-      renderAooOptions(filtered);
-    }
-
-    // Make selected AOO accessible during submit
-    window.getSelectedAoo = function () {
-      return Array.from(SELECTED_AOO);
-    };
-  </script>
-
-
-
+  <script src="../assets/js/cp-aoo.js"></script>
 
 
 </body>

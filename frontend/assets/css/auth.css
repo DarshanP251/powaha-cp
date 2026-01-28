@@ -320,3 +320,22 @@ select[multiple] option:hover {
   color: #0f172a;
   text-decoration: none;
 } 
+
+.suggestions {
+  position: relative;
+  background: #fff;
+  border: 1px solid #ddd;
+  max-height: 180px;
+  overflow-y: auto;
+  display: none;
+  z-index: 20;
+}
+
+.suggestions div {
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+.suggestions div:hover {
+  background: #f2f2f2;
+}
